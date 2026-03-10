@@ -91,3 +91,19 @@ Body JSON:
 DELETE /topicos/{id}
 Header:
 Authorization: Bearer <token>
+
+## Ejemplos en Postman
+
+Login autenticado con Token:
+
+![Ejemplo Login](assets/Login_Token_Autenticado.png)
+
+Creación de Topico:
+
+![Ejemplo Crear_Topico](assets/Crear_Topico.png)
+
+
+Listado de Topicos:
+
+![Ejemplo Listado_Topico](assets/Listar_Topicos.png)
+
