@@ -106,4 +106,3 @@ Creación de Topico:
 Listado de Topicos:
 
 ![Ejemplo Listado_Topico](assets/Listar_Topicos.png)
-
