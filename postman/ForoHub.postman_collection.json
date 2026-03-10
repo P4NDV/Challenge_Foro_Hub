@@ -1,0 +1,262 @@
+{
+  "info": {
+    "_postman_id": "f6a2a9fe-8f7d-4e1b-b0a4-8f4f8efdf001",
+    "name": "ForoHub API",
+    "description": "Coleccion para probar autenticacion JWT y CRUD de topicos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "topicoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "login",
+      "value": "admin",
+      "type": "string"
+    },
+    {
+      "key": "clave",
+      "value": "admin123",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const name = pm.info.requestName || '';",
+          "const isPublic = /Login|Negativa sin token/i.test(name);",
+          "if (!isPublic) {",
+          "  const token = pm.environment.get('token') || pm.collectionVariables.get('token');",
+          "  if (token && token.trim() !== '') {",
+          "    pm.request.headers.upsert({ key: 'Authorization', value: `Bearer ${token}` });",
+          "  }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"{{login}}\",\n  \"clave\": \"{{clave}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login OK', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const data = pm.response.json();",
+              "pm.environment.set('token', data.token);",
+              "pm.collectionVariables.set('token', data.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Crear topico",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Duda sobre JPA\",\n  \"mensaje\": \"No me persiste la entidad\",\n  \"autor\": \"Dirac\",\n  \"curso\": \"Spring Boot\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/topicos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "topicos"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Create OK', function () {",
+              "  pm.expect([200, 201]).to.include(pm.response.code);",
+              "});",
+              "const body = pm.response.json();",
+              "if (body.id) {",
+              "  pm.environment.set('topicoId', String(body.id));",
+              "  pm.collectionVariables.set('topicoId', String(body.id));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Listar topicos",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/topicos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "topicos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4 - Detalle topico",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/topicos/{{topicoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "topicos",
+            "{{topicoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5 - Actualizar topico",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Duda sobre JPA actualizada\",\n  \"mensaje\": \"Era falta de @Transactional\",\n  \"autor\": \"Dirac\",\n  \"curso\": \"Spring Boot\",\n  \"status\": \"RESUELTO\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/topicos/{{topicoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "topicos",
+            "{{topicoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6 - Eliminar topico",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/topicos/{{topicoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "topicos",
+            "{{topicoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "7 - Negativa sin token",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/topicos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "topicos"
+          ]
+        }
+      }
+    }
+  ]
+}
