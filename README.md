@@ -96,7 +96,7 @@ Authorization: Bearer <token>
 
 Login autenticado con Token:
 
-![Ejemplo Login](assets/Login_Token_Autenticado.png)
+![Ejemplo Login_Autenticacion](assets/Login_Token_Autenticado.png)
 
 Creación de Topico:
 
